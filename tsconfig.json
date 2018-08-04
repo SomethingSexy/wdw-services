@@ -1,0 +1,23 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es2017",
+    "lib": ["es2015", "es2017", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "pretty": true,
+    "newLine": "LF",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "sourceMap": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "experimentalDecorators": true,
+    "rootDir": "./src",
+    "noImplicitAny": false
+  },
+  "exclude": ["node_modules", "modules", "test"]
+}

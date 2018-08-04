@@ -1,0 +1,80 @@
+{
+  "name": "wdw-services",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Services for accessing WDW data.",
+  "main": "./modules/server.js",
+  "typings": "./index.d.ts",
+  "engines": {
+    "node": ">=8.2.1",
+    "npm": ">=5.6.0"
+  },
+  "scripts": {
+    "build": "tsc --outDir ./modules && copyfiles -u 1 './src/**/*.json' modules",
+    "build:data": "ts-node ./scripts/data.ts",
+    "postversion": "git push && git push --tags",
+    "start": "cross-env NODE_ENV=production node -r dotenv/config ./modules/server.js",
+    "start:core": "node -r dotenv/config ./modules/server.js",
+    "start:dev": "npm run build && cross-env DEBUG=panda* npm run start:core",
+    "test": "mocha --opts test/mocha.opts",
+    "version": "npm run build && git add -A modules"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SomethingSexy/wdw-services.git"
+  },
+  "author": "Tyler Cvetan",
+  "contributors": [
+    {
+      "name": "Tyler J Cvetan",
+      "url": "https://github.com/SomethingSexy/"
+    }
+  ],
+  "bugs": {
+    "url": "https://github.com/SomethingSexy/wdw-services"
+  },
+  "homepage": "https://github.com/SomethingSexy/wdw-services",
+  "dependencies": {
+    "cross-env": "^5.2.0",
+    "dotenv": "^6.0.0",
+    "fs-extra": "^5.0.0",
+    "invariant": "^2.2.4",
+    "joi": "^13.4.0",
+    "kcors": "^2.2.2",
+    "koa": "^2.5.2",
+    "koa-bodyparser": "^4.2.1",
+    "koa-compress": "^3.0.0",
+    "koa-router": "^7.4.0",
+    "lodash": "^4.17.10",
+    "node-fetch": "^2.1.2",
+    "reflect-metadata": "^0.1.12",
+    "routing-controllers": "^0.7.7",
+    "uuid": "^3.2.1",
+    "wdw-data": "github:SomethingSexy/wdw-data#v0.0.14",
+    "winston": "^3.0.0"
+  },
+  "devDependencies": {
+    "@types/chai": "^4.1.3",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/fs-extra": "^5.0.2",
+    "@types/invariant": "^2.2.29",
+    "@types/joi": "^13.4.0",
+    "@types/koa": "^2.0.46",
+    "@types/koa-bodyparser": "^5.0.1",
+    "@types/koa-compress": "^2.0.8",
+    "@types/mocha": "^2.2.48",
+    "@types/uuid": "^3.4.3",
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "copyfiles": "^2.0.0",
+    "mocha": "^5.1.1",
+    "ts-loader": "^3.5.0",
+    "ts-node": "^5.0.1",
+    "tslint": "^5.10.0",
+    "tslint-config-airbnb": "^5.8.0",
+    "tslint-config-standard": "^7.0.0",
+    "tslint-eslint-rules": "^4.1.1",
+    "tslint-loader": "^3.6.0",
+    "typescript": "^2.9.2"
+  }
+}
