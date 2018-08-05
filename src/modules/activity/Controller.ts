@@ -15,22 +15,22 @@ import logger from '../../log';
    *
    * Figure out how to break this into multiple files, if this gets too big.
    */
-export default ({ location }) => {
+export default ({ activity }) => {
   @JsonController()
-  class LocationController {
+  class ActivityController {
     /**
      * Retrieves all locations
      */
-    @Get('/locations')
-    public async getAllLocations(
+    @Get('/activities')
+    public async getAllActivities(
       @QueryParam('type') type?: string
     ): Promise<{}> {
       try {
         let locations;
         if (type) { // tslint:disable-line
-          locations = await location.list({ type });
+          locations = await activity.list({ type });
         } else {
-          locations = await location.list();
+          locations = await activity.list();
         }
 
         return locations;
@@ -42,56 +42,31 @@ export default ({ location }) => {
     /**
      * Retrieves a single location
      */
-    @Get('/locations/:id')
-    public async getLocation(
+    @Get('/activities/:id')
+    public async getActivity(
       @Param('id') id: string
     ): Promise<{}> {
       let found;
 
       try {
-        logger.debug(`Searching for location ${id}`);
-        found = await location.get(id);
+        logger.debug(`Searching for activities ${id}`);
+        found = await activity.get(id);
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }
       if (!found) {
-        throw new BadRequestError(`Location ${id} does not exist.`);
+        throw new BadRequestError(`Activity ${id} does not exist.`);
       }
 
-      logger.debug(`Found location ${id}, returning.`);
+      logger.debug(`Found activity ${id}, returning.`);
       return found;
-    }
-
-    /**
-     * Retrieves a single location's activities
-     */
-    @Get('/locations/:id/activities')
-    public async getLocationActivities(
-      @Param('id') id: string
-    ): Promise<{}> {
-      let found;
-
-      try {
-        logger.debug(`Searching for activities for location ${id}`);
-        found = await location.get(id, ['activities']);
-      } catch ({ message, code }) {
-        throw new InternalServerError(message);
-      }
-      if (!found) {
-        throw new BadRequestError(`Location ${id} does not exist.`);
-      }
-
-      logger.debug(`Found location ${id}, returning activities.`);
-
-      const activities = found.activities;
-      return activities;
     }
 
     /**
      * Retrieves a single location's schedule by date
      */
-    @Get('/locations/:id/schedules/:date')
-    public async getLocationSchedule(
+    @Get('/activities/:id/schedules/:date')
+    public async getActivitySchedule(
       @Param('id') id: string,
       @Param('date') date: string
     ): Promise<{}> {
@@ -99,7 +74,7 @@ export default ({ location }) => {
 
       try {
         logger.debug(`Searching for schedules for location ${id} on ${date}`);
-        found = await location.getLocationSchedule(id, date);
+        found = await activity.getActivitySchedule();
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }
@@ -112,5 +87,5 @@ export default ({ location }) => {
     }
   }
 
-  return LocationController;
+  return ActivityController;
 };

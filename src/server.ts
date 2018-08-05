@@ -10,6 +10,7 @@ import zlib from 'zlib';
 import config from './config/index';
 import logger from './log';
 import loggingMiddleware from './middleware/logging';
+import activityController from './modules/activity/Controller';
 import locationController from './modules/location/Controller';
 import statusController from './modules/status/Controller';
 
@@ -45,7 +46,11 @@ if (cluster.isMaster) {
       const app = new Koa();
 
       useKoaServer(app, {
-        controllers: [locationController(models), statusController(models)],
+        controllers: [
+          activityController(models),
+          locationController(models),
+          statusController(models)
+        ],
         cors: true,
         defaultErrorHandler: false,
         middlewares: [loggingMiddleware(config, logger)]

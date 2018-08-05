@@ -15,8 +15,9 @@ const zlib_1 = __importDefault(require("zlib"));
 const index_1 = __importDefault(require("./config/index"));
 const log_1 = __importDefault(require("./log"));
 const logging_1 = __importDefault(require("./middleware/logging"));
-const Controller_1 = __importDefault(require("./modules/location/Controller"));
-const Controller_2 = __importDefault(require("./modules/status/Controller"));
+const Controller_1 = __importDefault(require("./modules/activity/Controller"));
+const Controller_2 = __importDefault(require("./modules/location/Controller"));
+const Controller_3 = __importDefault(require("./modules/status/Controller"));
 const numCPUs = os_1.cpus().length;
 if (cluster_1.default.isMaster) {
     log_1.default.info(`This machine has ${numCPUs} CPUs.`);
@@ -43,7 +44,11 @@ else {
         .then(models => {
         const app = new koa_1.default();
         routing_controllers_1.useKoaServer(app, {
-            controllers: [Controller_1.default(models), Controller_2.default(models)],
+            controllers: [
+                Controller_1.default(models),
+                Controller_2.default(models),
+                Controller_3.default(models)
+            ],
             cors: true,
             defaultErrorHandler: false,
             middlewares: [logging_1.default(index_1.default, log_1.default)]

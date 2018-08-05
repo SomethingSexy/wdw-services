@@ -20,19 +20,19 @@ const log_1 = __importDefault(require("../../log"));
  *
  * Figure out how to break this into multiple files, if this gets too big.
  */
-exports.default = ({ location }) => {
-    let LocationController = class LocationController {
+exports.default = ({ activity }) => {
+    let ActivityController = class ActivityController {
         /**
          * Retrieves all locations
          */
-        async getAllLocations(type) {
+        async getAllActivities(type) {
             try {
                 let locations;
                 if (type) { // tslint:disable-line
-                    locations = await location.list({ type });
+                    locations = await activity.list({ type });
                 }
                 else {
-                    locations = await location.list();
+                    locations = await activity.list();
                 }
                 return locations;
             }
@@ -43,48 +43,29 @@ exports.default = ({ location }) => {
         /**
          * Retrieves a single location
          */
-        async getLocation(id) {
+        async getActivity(id) {
             let found;
             try {
-                log_1.default.debug(`Searching for location ${id}`);
-                found = await location.get(id);
+                log_1.default.debug(`Searching for activities ${id}`);
+                found = await activity.get(id);
             }
             catch ({ message, code }) {
                 throw new routing_controllers_1.InternalServerError(message);
             }
             if (!found) {
-                throw new routing_controllers_1.BadRequestError(`Location ${id} does not exist.`);
+                throw new routing_controllers_1.BadRequestError(`Activity ${id} does not exist.`);
             }
-            log_1.default.debug(`Found location ${id}, returning.`);
+            log_1.default.debug(`Found activity ${id}, returning.`);
             return found;
-        }
-        /**
-         * Retrieves a single location's activities
-         */
-        async getLocationActivities(id) {
-            let found;
-            try {
-                log_1.default.debug(`Searching for activities for location ${id}`);
-                found = await location.get(id, ['activities']);
-            }
-            catch ({ message, code }) {
-                throw new routing_controllers_1.InternalServerError(message);
-            }
-            if (!found) {
-                throw new routing_controllers_1.BadRequestError(`Location ${id} does not exist.`);
-            }
-            log_1.default.debug(`Found location ${id}, returning activities.`);
-            const activities = found.activities;
-            return activities;
         }
         /**
          * Retrieves a single location's schedule by date
          */
-        async getLocationSchedule(id, date) {
+        async getActivitySchedule(id, date) {
             let found;
             try {
                 log_1.default.debug(`Searching for schedules for location ${id} on ${date}`);
-                found = await location.getLocationSchedule(id, date);
+                found = await activity.getActivitySchedule();
             }
             catch ({ message, code }) {
                 throw new routing_controllers_1.InternalServerError(message);
@@ -97,25 +78,21 @@ exports.default = ({ location }) => {
         }
     };
     __decorate([
-        routing_controllers_1.Get('/locations'),
+        routing_controllers_1.Get('/activities'),
         __param(0, routing_controllers_1.QueryParam('type'))
-    ], LocationController.prototype, "getAllLocations", null);
+    ], ActivityController.prototype, "getAllActivities", null);
     __decorate([
-        routing_controllers_1.Get('/locations/:id'),
+        routing_controllers_1.Get('/activities/:id'),
         __param(0, routing_controllers_1.Param('id'))
-    ], LocationController.prototype, "getLocation", null);
+    ], ActivityController.prototype, "getActivity", null);
     __decorate([
-        routing_controllers_1.Get('/locations/:id/activities'),
-        __param(0, routing_controllers_1.Param('id'))
-    ], LocationController.prototype, "getLocationActivities", null);
-    __decorate([
-        routing_controllers_1.Get('/locations/:id/schedules/:date'),
+        routing_controllers_1.Get('/activities/:id/schedules/:date'),
         __param(0, routing_controllers_1.Param('id')),
         __param(1, routing_controllers_1.Param('date'))
-    ], LocationController.prototype, "getLocationSchedule", null);
-    LocationController = __decorate([
+    ], ActivityController.prototype, "getActivitySchedule", null);
+    ActivityController = __decorate([
         routing_controllers_1.JsonController()
-    ], LocationController);
-    return LocationController;
+    ], ActivityController);
+    return ActivityController;
 };
 //# sourceMappingURL=Controller.js.map
