@@ -31,13 +31,16 @@ if (cluster.isMaster) {
     cluster.fork();
   });
 } else {
-  createModels({
-    database: 'wdw',
-    pool: {
-      max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
+  createModels(
+    {
+      database: 'wdw',
+      pool: {
+        max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
+      },
+      username: 'tylercvetan',
     },
-    username: 'tylercvetan',
-  })
+    logger
+  )
     .then(models => {
       const app = new Koa();
 

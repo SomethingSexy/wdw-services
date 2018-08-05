@@ -39,7 +39,7 @@ else {
             max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
         },
         username: 'tylercvetan',
-    })
+    }, log_1.default)
         .then(models => {
         const app = new koa_1.default();
         routing_controllers_1.useKoaServer(app, {
