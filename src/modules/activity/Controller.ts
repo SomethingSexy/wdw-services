@@ -73,16 +73,44 @@ export default ({ activity }) => {
       let found;
 
       try {
-        logger.debug(`Searching for schedules for location ${id} on ${date}`);
-        found = await activity.getActivitySchedule();
+        logger.debug(`Searching for schedules for activity ${id} on ${date}`);
+        found = await activity.getActivitySchedule(id, date);
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }
       if (!found) {
-        throw new BadRequestError(`Location ${id} does not exist.`);
+        throw new BadRequestError(
+          `Activity ${id} does not exist or it does not support schedules.`
+        );
       }
 
-      logger.debug(`Found location ${id}, returning.`);
+      logger.debug(`Found activity schedule ${id}, returning.`);
+      return found;
+    }
+
+    /**
+     * Retrieves a single location's schedule by date
+     */
+    @Get('/activities/:id/waittimes/:date')
+    public async getActivityWaitTimes(
+      @Param('id') id: string,
+      @Param('date') date: string
+    ): Promise<{}> {
+      let found;
+
+      try {
+        logger.debug(`Searching for waittimes for activity ${id} on ${date}`);
+        found = await activity.getWaittimes(id, [date]);
+      } catch ({ message, code }) {
+        throw new InternalServerError(message);
+      }
+      if (!found) {
+        throw new BadRequestError(
+          `Activity ${id} does not exist or it does not support waittimes.`
+        );
+      }
+
+      logger.debug(`Found activity wait times ${id}, returning.`);
       return found;
     }
   }

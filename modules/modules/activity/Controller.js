@@ -64,16 +64,34 @@ exports.default = ({ activity }) => {
         async getActivitySchedule(id, date) {
             let found;
             try {
-                log_1.default.debug(`Searching for schedules for location ${id} on ${date}`);
-                found = await activity.getActivitySchedule();
+                log_1.default.debug(`Searching for schedules for activity ${id} on ${date}`);
+                found = await activity.getActivitySchedule(id, date);
             }
             catch ({ message, code }) {
                 throw new routing_controllers_1.InternalServerError(message);
             }
             if (!found) {
-                throw new routing_controllers_1.BadRequestError(`Location ${id} does not exist.`);
+                throw new routing_controllers_1.BadRequestError(`Activity ${id} does not exist or it does not support schedules.`);
             }
-            log_1.default.debug(`Found location ${id}, returning.`);
+            log_1.default.debug(`Found activity schedule ${id}, returning.`);
+            return found;
+        }
+        /**
+         * Retrieves a single location's schedule by date
+         */
+        async getActivityWaitTimes(id, date) {
+            let found;
+            try {
+                log_1.default.debug(`Searching for waittimes for activity ${id} on ${date}`);
+                found = await activity.getWaittimes(id, [date]);
+            }
+            catch ({ message, code }) {
+                throw new routing_controllers_1.InternalServerError(message);
+            }
+            if (!found) {
+                throw new routing_controllers_1.BadRequestError(`Activity ${id} does not exist or it does not support waittimes.`);
+            }
+            log_1.default.debug(`Found activity wait times ${id}, returning.`);
             return found;
         }
     };
@@ -90,6 +108,11 @@ exports.default = ({ activity }) => {
         __param(0, routing_controllers_1.Param('id')),
         __param(1, routing_controllers_1.Param('date'))
     ], ActivityController.prototype, "getActivitySchedule", null);
+    __decorate([
+        routing_controllers_1.Get('/activities/:id/waittimes/:date'),
+        __param(0, routing_controllers_1.Param('id')),
+        __param(1, routing_controllers_1.Param('date'))
+    ], ActivityController.prototype, "getActivityWaitTimes", null);
     ActivityController = __decorate([
         routing_controllers_1.JsonController()
     ], ActivityController);
