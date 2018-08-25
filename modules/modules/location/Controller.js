@@ -41,6 +41,20 @@ exports.default = ({ location }) => {
             }
         }
         /**
+         * Bulk update locations.  This might be a combination of add and update.
+         * The data will be coming from wdw.
+         *
+         * @param locations
+         */
+        async batchUpsertLocations(locations) {
+            try {
+                return await location.addUpdateLocations(locations);
+            }
+            catch ({ message, code }) {
+                throw new routing_controllers_1.InternalServerError(message);
+            }
+        }
+        /**
          * Retrieves a single location
          */
         async getLocation(id) {
@@ -100,6 +114,10 @@ exports.default = ({ location }) => {
         routing_controllers_1.Get('/locations'),
         __param(0, routing_controllers_1.QueryParam('type'))
     ], LocationController.prototype, "getAllLocations", null);
+    __decorate([
+        routing_controllers_1.Post('/locations'),
+        __param(0, routing_controllers_1.Body())
+    ], LocationController.prototype, "batchUpsertLocations", null);
     __decorate([
         routing_controllers_1.Get('/locations/:id'),
         __param(0, routing_controllers_1.Param('id'))

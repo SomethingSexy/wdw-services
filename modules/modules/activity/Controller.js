@@ -23,7 +23,7 @@ const log_1 = __importDefault(require("../../log"));
 exports.default = ({ activity }) => {
     let ActivityController = class ActivityController {
         /**
-         * Retrieves all locations
+         * Retrieves all activities
          */
         async getAllActivities(type) {
             try {
@@ -41,7 +41,7 @@ exports.default = ({ activity }) => {
             }
         }
         /**
-         * Retrieves a single location
+         * Retrieves a single activity
          */
         async getActivity(id) {
             let found;
@@ -59,7 +59,7 @@ exports.default = ({ activity }) => {
             return found;
         }
         /**
-         * Retrieves a single location's schedule by date
+         * Retrieves a single activity's schedule by date
          */
         async getActivitySchedule(id, date) {
             let found;
@@ -77,7 +77,7 @@ exports.default = ({ activity }) => {
             return found;
         }
         /**
-         * Retrieves a single location's schedule by date
+         * Retrieves a single activity's wait times for a date.
          */
         async getActivityWaitTimes(id, date) {
             let found;

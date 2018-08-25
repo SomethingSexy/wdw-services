@@ -1,10 +1,11 @@
 import {
   BadRequestError,
-  // Controller,
+  Body,
   Get,
   InternalServerError,
   JsonController,
   Param,
+  Post,
   QueryParam
 } from 'routing-controllers';
 import logger from '../../log';
@@ -34,6 +35,23 @@ export default ({ location }) => {
         }
 
         return locations;
+      } catch ({ message, code }) {
+        throw new InternalServerError(message);
+      }
+    }
+
+    /**
+     * Bulk update locations.  This might be a combination of add and update.
+     * The data will be coming from wdw.
+     *
+     * @param locations
+     */
+    @Post('/locations')
+    public async batchUpsertLocations(
+      @Body() locations: any[]
+    ): Promise<{}> {
+      try {
+        return await location.addUpdateLocations(locations);
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }

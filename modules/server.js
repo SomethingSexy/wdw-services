@@ -14,6 +14,7 @@ const wdw_data_1 = require("wdw-data");
 const zlib_1 = __importDefault(require("zlib"));
 const index_1 = __importDefault(require("./config/index"));
 const log_1 = __importDefault(require("./log"));
+const data_1 = __importDefault(require("./middleware/data"));
 const logging_1 = __importDefault(require("./middleware/logging"));
 const Controller_1 = __importDefault(require("./modules/activity/Controller"));
 const Controller_2 = __importDefault(require("./modules/location/Controller"));
@@ -51,6 +52,7 @@ else {
             ],
             cors: true,
             defaultErrorHandler: false,
+            interceptors: [data_1.default],
             middlewares: [logging_1.default(index_1.default, log_1.default)]
         });
         app.use(koa_bodyparser_1.default());

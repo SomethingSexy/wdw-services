@@ -50,7 +50,7 @@
     "reflect-metadata": "^0.1.12",
     "routing-controllers": "^0.7.7",
     "uuid": "^3.2.1",
-    "wdw-data": "github:SomethingSexy/wdw-data#v0.0.14",
+    "wdw-data": "github:SomethingSexy/wdw-data#v0.1.0",
     "winston": "^3.0.0"
   },
   "devDependencies": {

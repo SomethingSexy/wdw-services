@@ -19,7 +19,7 @@ export default ({ activity }) => {
   @JsonController()
   class ActivityController {
     /**
-     * Retrieves all locations
+     * Retrieves all activities
      */
     @Get('/activities')
     public async getAllActivities(
@@ -40,7 +40,7 @@ export default ({ activity }) => {
     }
 
     /**
-     * Retrieves a single location
+     * Retrieves a single activity
      */
     @Get('/activities/:id')
     public async getActivity(
@@ -63,7 +63,7 @@ export default ({ activity }) => {
     }
 
     /**
-     * Retrieves a single location's schedule by date
+     * Retrieves a single activity's schedule by date
      */
     @Get('/activities/:id/schedules/:date')
     public async getActivitySchedule(
@@ -89,7 +89,7 @@ export default ({ activity }) => {
     }
 
     /**
-     * Retrieves a single location's schedule by date
+     * Retrieves a single activity's wait times for a date.
      */
     @Get('/activities/:id/waittimes/:date')
     public async getActivityWaitTimes(

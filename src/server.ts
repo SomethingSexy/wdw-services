@@ -9,6 +9,7 @@ import { createModels } from 'wdw-data';
 import zlib from 'zlib';
 import config from './config/index';
 import logger from './log';
+import dataInterceptor from './middleware/data';
 import loggingMiddleware from './middleware/logging';
 import activityController from './modules/activity/Controller';
 import locationController from './modules/location/Controller';
@@ -53,6 +54,7 @@ if (cluster.isMaster) {
         ],
         cors: true,
         defaultErrorHandler: false,
+        interceptors: [dataInterceptor],
         middlewares: [loggingMiddleware(config, logger)]
       });
 
