@@ -99,7 +99,6 @@ exports.default = ({ location }) => {
         }
         async addSchedules(id, schedules) {
             try {
-                console.log(id, schedules);
                 return await location.addSchedules(id, schedules);
             }
             catch ({ message, code }) {

@@ -24,11 +24,18 @@ exports.default = ({ activity }) => {
         /**
          * Retrieves all activities
          */
-        async getAllActivities(type) {
+        async getAllActivities(type, fetchSchedule) {
             try {
                 let locations;
-                if (type) { // tslint:disable-line
-                    locations = await activity.list({ type });
+                if (type || fetchSchedule) {
+                    const where = {};
+                    if (type) {
+                        where.type = type;
+                    }
+                    if (fetchSchedule === 'true') {
+                        where.fetchSchedule = true;
+                    }
+                    locations = await activity.list(where);
                 }
                 else {
                     locations = await activity.list();
@@ -71,6 +78,14 @@ exports.default = ({ activity }) => {
             log_1.default.debug(`Found activity ${id}, returning.`);
             return found;
         }
+        async addSchedules(id, schedules) {
+            try {
+                return await activity.addSchedules(id, schedules);
+            }
+            catch ({ message, code }) {
+                throw new routing_controllers_1.InternalServerError(message);
+            }
+        }
         /**
          * Retrieves a single activity's schedule by date
          */
@@ -110,7 +125,8 @@ exports.default = ({ activity }) => {
     };
     __decorate([
         routing_controllers_1.Get('/activities'),
-        __param(0, routing_controllers_1.QueryParam('type'))
+        __param(0, routing_controllers_1.QueryParam('type')),
+        __param(1, routing_controllers_1.QueryParam('fetchSchedule'))
     ], ActivityController.prototype, "getAllActivities", null);
     __decorate([
         routing_controllers_1.Post('/activities'),
@@ -120,6 +136,11 @@ exports.default = ({ activity }) => {
         routing_controllers_1.Get('/activities/:id'),
         __param(0, routing_controllers_1.Param('id'))
     ], ActivityController.prototype, "getActivity", null);
+    __decorate([
+        routing_controllers_1.Post('/activities/:id/schedules'),
+        __param(0, routing_controllers_1.Param('id')),
+        __param(1, routing_controllers_1.Body())
+    ], ActivityController.prototype, "addSchedules", null);
     __decorate([
         routing_controllers_1.Get('/activities/:id/schedules/:date'),
         __param(0, routing_controllers_1.Param('id')),

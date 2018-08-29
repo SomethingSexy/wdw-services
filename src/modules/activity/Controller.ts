@@ -23,12 +23,20 @@ export default ({ activity }) => {
      */
     @Get('/activities')
     public async getAllActivities(
-      @QueryParam('type') type?: string
+      @QueryParam('type') type?: string,
+      @QueryParam('fetchSchedule') fetchSchedule?: string
     ): Promise<{}> {
       try {
         let locations;
-        if (type) { // tslint:disable-line
-          locations = await activity.list({ type });
+        if (type || fetchSchedule) {
+          const where: { type?: string; fetchSchedule?: boolean; } = {};
+          if (type) {
+            where.type = type;
+          }
+          if (fetchSchedule === 'true') {
+            where.fetchSchedule = true;
+          }
+          locations = await activity.list(where);
         } else {
           locations = await activity.list();
         }
@@ -77,6 +85,18 @@ export default ({ activity }) => {
 
       logger.debug(`Found activity ${id}, returning.`);
       return found;
+    }
+
+    @Post('/activities/:id/schedules')
+    public async addSchedules(
+      @Param('id') id: string,
+      @Body() schedules: any[]
+    ): Promise<{}> {
+      try {
+        return await activity.addSchedules(id, schedules);
+      } catch ({ message, code }) {
+        throw new InternalServerError(message);
+      }
     }
 
     /**
