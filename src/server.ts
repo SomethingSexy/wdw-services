@@ -12,6 +12,7 @@ import logger from './log';
 import dataInterceptor from './middleware/data';
 import loggingMiddleware from './middleware/logging';
 import activityController from './modules/activity/Controller';
+import diningController from './modules/dining/Controller';
 import locationController from './modules/location/Controller';
 import statusController from './modules/status/Controller';
 
@@ -49,6 +50,7 @@ if (cluster.isMaster) {
       useKoaServer(app, {
         controllers: [
           activityController(models),
+          diningController(models),
           locationController(models),
           statusController(models)
         ],

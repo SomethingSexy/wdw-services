@@ -33,7 +33,7 @@ describe('controller', () => {
 
         const mockModel = {
           location: {
-            addUpdateLocations: () => updatedLocation
+            addUpdate: () => updatedLocation
           }
         };
 

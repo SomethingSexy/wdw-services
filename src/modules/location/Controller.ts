@@ -10,12 +10,11 @@ import {
 } from 'routing-controllers';
 import logger from '../../log';
 
-  /**
-   * Controllers for everything tenant releated.  Wrapping in anonymous function to inject
-   * models and services (we could look into DI instead).
-   *
-   * Figure out how to break this into multiple files, if this gets too big.
-   */
+/**
+ * Controllers for everything location releated.  Wrapping in anonymous function to inject
+ * models and services (we could look into DI instead).
+ *
+ */
 export default ({ location }) => {
   @JsonController()
   class LocationController {
@@ -24,12 +23,20 @@ export default ({ location }) => {
      */
     @Get('/locations')
     public async getAllLocations(
-      @QueryParam('type') type?: string
+      @QueryParam('type') type?: string,
+      @QueryParam('fetchSchedule') fetchSchedule?: string
     ): Promise<{}> {
       try {
         let locations;
-        if (type) { // tslint:disable-line
-          locations = await location.list({ type });
+        if (type || fetchSchedule) {
+          const where: { type?: string; fetchSchedule?: boolean; } = {};
+          if (type) {
+            where.type = type;
+          }
+          if (fetchSchedule === 'true') {
+            where.fetchSchedule = true;
+          }
+          locations = await location.list(where);
         } else {
           locations = await location.list();
         }
@@ -51,7 +58,7 @@ export default ({ location }) => {
       @Body() locations: any[]
     ): Promise<{}> {
       try {
-        return await location.addUpdateLocations(locations);
+        return await location.addUpdate(locations);
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }
@@ -103,6 +110,18 @@ export default ({ location }) => {
 
       const activities = found.activities;
       return activities;
+    }
+
+    @Post('/locations/:id/schedules')
+    public async addSchedules(
+      @Param('id') id: string,
+      @Body() schedules: any[]
+    ): Promise<{}> {
+      try {
+        return await location.addSchedules(id, schedules);
+      } catch ({ message, code }) {
+        throw new InternalServerError(message);
+      }
     }
 
     /**

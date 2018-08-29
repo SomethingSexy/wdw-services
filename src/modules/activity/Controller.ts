@@ -1,20 +1,20 @@
 import {
   BadRequestError,
-  // Controller,
+  Body,
   Get,
   InternalServerError,
   JsonController,
   Param,
+  Post,
   QueryParam
 } from 'routing-controllers';
 import logger from '../../log';
 
-  /**
-   * Controllers for everything tenant releated.  Wrapping in anonymous function to inject
-   * models and services (we could look into DI instead).
-   *
-   * Figure out how to break this into multiple files, if this gets too big.
-   */
+/**
+ * Controllers for everything activity releated.  Wrapping in anonymous function to inject
+ * models and services (we could look into DI instead).
+ *
+ */
 export default ({ activity }) => {
   @JsonController()
   class ActivityController {
@@ -34,6 +34,23 @@ export default ({ activity }) => {
         }
 
         return locations;
+      } catch ({ message, code }) {
+        throw new InternalServerError(message);
+      }
+    }
+
+    /**
+     * Bulk update activities.  This might be a combination of add and update.
+     * The data will be coming from wdw.
+     *
+     * @param activities
+     */
+    @Post('/activities')
+    public async batchUpsertActivities(
+      @Body() activities: any[]
+    ): Promise<{}> {
+      try {
+        return await activity.addUpdate(activities);
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }

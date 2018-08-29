@@ -17,8 +17,9 @@ const log_1 = __importDefault(require("./log"));
 const data_1 = __importDefault(require("./middleware/data"));
 const logging_1 = __importDefault(require("./middleware/logging"));
 const Controller_1 = __importDefault(require("./modules/activity/Controller"));
-const Controller_2 = __importDefault(require("./modules/location/Controller"));
-const Controller_3 = __importDefault(require("./modules/status/Controller"));
+const Controller_2 = __importDefault(require("./modules/dining/Controller"));
+const Controller_3 = __importDefault(require("./modules/location/Controller"));
+const Controller_4 = __importDefault(require("./modules/status/Controller"));
 const numCPUs = os_1.cpus().length;
 if (cluster_1.default.isMaster) {
     log_1.default.info(`This machine has ${numCPUs} CPUs.`);
@@ -48,7 +49,8 @@ else {
             controllers: [
                 Controller_1.default(models),
                 Controller_2.default(models),
-                Controller_3.default(models)
+                Controller_3.default(models),
+                Controller_4.default(models)
             ],
             cors: true,
             defaultErrorHandler: false,

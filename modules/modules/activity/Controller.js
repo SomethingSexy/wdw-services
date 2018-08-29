@@ -15,10 +15,9 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const routing_controllers_1 = require("routing-controllers");
 const log_1 = __importDefault(require("../../log"));
 /**
- * Controllers for everything tenant releated.  Wrapping in anonymous function to inject
+ * Controllers for everything activity releated.  Wrapping in anonymous function to inject
  * models and services (we could look into DI instead).
  *
- * Figure out how to break this into multiple files, if this gets too big.
  */
 exports.default = ({ activity }) => {
     let ActivityController = class ActivityController {
@@ -35,6 +34,20 @@ exports.default = ({ activity }) => {
                     locations = await activity.list();
                 }
                 return locations;
+            }
+            catch ({ message, code }) {
+                throw new routing_controllers_1.InternalServerError(message);
+            }
+        }
+        /**
+         * Bulk update activities.  This might be a combination of add and update.
+         * The data will be coming from wdw.
+         *
+         * @param activities
+         */
+        async batchUpsertActivities(activities) {
+            try {
+                return await activity.addUpdate(activities);
             }
             catch ({ message, code }) {
                 throw new routing_controllers_1.InternalServerError(message);
@@ -99,6 +112,10 @@ exports.default = ({ activity }) => {
         routing_controllers_1.Get('/activities'),
         __param(0, routing_controllers_1.QueryParam('type'))
     ], ActivityController.prototype, "getAllActivities", null);
+    __decorate([
+        routing_controllers_1.Post('/activities'),
+        __param(0, routing_controllers_1.Body())
+    ], ActivityController.prototype, "batchUpsertActivities", null);
     __decorate([
         routing_controllers_1.Get('/activities/:id'),
         __param(0, routing_controllers_1.Param('id'))

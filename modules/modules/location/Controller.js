@@ -15,21 +15,27 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const routing_controllers_1 = require("routing-controllers");
 const log_1 = __importDefault(require("../../log"));
 /**
- * Controllers for everything tenant releated.  Wrapping in anonymous function to inject
+ * Controllers for everything location releated.  Wrapping in anonymous function to inject
  * models and services (we could look into DI instead).
  *
- * Figure out how to break this into multiple files, if this gets too big.
  */
 exports.default = ({ location }) => {
     let LocationController = class LocationController {
         /**
          * Retrieves all locations
          */
-        async getAllLocations(type) {
+        async getAllLocations(type, fetchSchedule) {
             try {
                 let locations;
-                if (type) { // tslint:disable-line
-                    locations = await location.list({ type });
+                if (type || fetchSchedule) {
+                    const where = {};
+                    if (type) {
+                        where.type = type;
+                    }
+                    if (fetchSchedule === 'true') {
+                        where.fetchSchedule = true;
+                    }
+                    locations = await location.list(where);
                 }
                 else {
                     locations = await location.list();
@@ -48,7 +54,7 @@ exports.default = ({ location }) => {
          */
         async batchUpsertLocations(locations) {
             try {
-                return await location.addUpdateLocations(locations);
+                return await location.addUpdate(locations);
             }
             catch ({ message, code }) {
                 throw new routing_controllers_1.InternalServerError(message);
@@ -91,6 +97,15 @@ exports.default = ({ location }) => {
             const activities = found.activities;
             return activities;
         }
+        async addSchedules(id, schedules) {
+            try {
+                console.log(id, schedules);
+                return await location.addSchedules(id, schedules);
+            }
+            catch ({ message, code }) {
+                throw new routing_controllers_1.InternalServerError(message);
+            }
+        }
         /**
          * Retrieves a single location's schedule by date
          */
@@ -112,7 +127,8 @@ exports.default = ({ location }) => {
     };
     __decorate([
         routing_controllers_1.Get('/locations'),
-        __param(0, routing_controllers_1.QueryParam('type'))
+        __param(0, routing_controllers_1.QueryParam('type')),
+        __param(1, routing_controllers_1.QueryParam('fetchSchedule'))
     ], LocationController.prototype, "getAllLocations", null);
     __decorate([
         routing_controllers_1.Post('/locations'),
@@ -126,6 +142,11 @@ exports.default = ({ location }) => {
         routing_controllers_1.Get('/locations/:id/activities'),
         __param(0, routing_controllers_1.Param('id'))
     ], LocationController.prototype, "getLocationActivities", null);
+    __decorate([
+        routing_controllers_1.Post('/locations/:id/schedules'),
+        __param(0, routing_controllers_1.Param('id')),
+        __param(1, routing_controllers_1.Body())
+    ], LocationController.prototype, "addSchedules", null);
     __decorate([
         routing_controllers_1.Get('/locations/:id/schedules/:date'),
         __param(0, routing_controllers_1.Param('id')),
