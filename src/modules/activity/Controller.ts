@@ -4,6 +4,7 @@ import {
   Get,
   InternalServerError,
   JsonController,
+  OnUndefined,
   Param,
   Post,
   QueryParam
@@ -59,6 +60,22 @@ export default ({ activity }) => {
     ): Promise<{}> {
       try {
         return await activity.addUpdate(activities);
+      } catch ({ message, code }) {
+        throw new InternalServerError(message);
+      }
+    }
+
+    @Post('/activities/waittimes/:timeStamp')
+    @OnUndefined(204)
+    public async batchAddWaitTimes(
+      @Param('timeStamp') timeStamp: string,
+      @Body() waittimes: any[]
+    ) {
+      try {
+        await activity.addWaitTimes(
+          timeStamp,
+          waittimes
+        );
       } catch ({ message, code }) {
         throw new InternalServerError(message);
       }

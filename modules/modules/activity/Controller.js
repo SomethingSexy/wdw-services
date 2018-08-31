@@ -60,6 +60,14 @@ exports.default = ({ activity }) => {
                 throw new routing_controllers_1.InternalServerError(message);
             }
         }
+        async batchAddWaitTimes(timeStamp, waittimes) {
+            try {
+                await activity.addWaitTimes(timeStamp, waittimes);
+            }
+            catch ({ message, code }) {
+                throw new routing_controllers_1.InternalServerError(message);
+            }
+        }
         /**
          * Retrieves a single activity
          */
@@ -132,6 +140,12 @@ exports.default = ({ activity }) => {
         routing_controllers_1.Post('/activities'),
         __param(0, routing_controllers_1.Body())
     ], ActivityController.prototype, "batchUpsertActivities", null);
+    __decorate([
+        routing_controllers_1.Post('/activities/waittimes/:timeStamp'),
+        routing_controllers_1.OnUndefined(204),
+        __param(0, routing_controllers_1.Param('timeStamp')),
+        __param(1, routing_controllers_1.Body())
+    ], ActivityController.prototype, "batchAddWaitTimes", null);
     __decorate([
         routing_controllers_1.Get('/activities/:id'),
         __param(0, routing_controllers_1.Param('id'))
