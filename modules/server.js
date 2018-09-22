@@ -19,7 +19,8 @@ const logging_1 = __importDefault(require("./middleware/logging"));
 const Controller_1 = __importDefault(require("./modules/activity/Controller"));
 const Controller_2 = __importDefault(require("./modules/dining/Controller"));
 const Controller_3 = __importDefault(require("./modules/location/Controller"));
-const Controller_4 = __importDefault(require("./modules/status/Controller"));
+const Controller_4 = __importDefault(require("./modules/shop/Controller"));
+const Controller_5 = __importDefault(require("./modules/status/Controller"));
 const numCPUs = os_1.cpus().length;
 if (cluster_1.default.isMaster) {
     log_1.default.info(`This machine has ${numCPUs} CPUs.`);
@@ -38,6 +39,7 @@ if (cluster_1.default.isMaster) {
 else {
     wdw_data_1.createModels({
         database: 'wdw',
+        logging: false,
         pool: {
             max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
         },
@@ -50,7 +52,8 @@ else {
                 Controller_1.default(models),
                 Controller_2.default(models),
                 Controller_3.default(models),
-                Controller_4.default(models)
+                Controller_4.default(models),
+                Controller_5.default(models)
             ],
             cors: true,
             defaultErrorHandler: false,

@@ -14,6 +14,7 @@ import loggingMiddleware from './middleware/logging';
 import activityController from './modules/activity/Controller';
 import diningController from './modules/dining/Controller';
 import locationController from './modules/location/Controller';
+import shopController from './modules/shop/Controller';
 import statusController from './modules/status/Controller';
 
 const numCPUs = cpus().length;
@@ -37,6 +38,7 @@ if (cluster.isMaster) {
   createModels(
     {
       database: 'wdw',
+      logging: false,
       pool: {
         max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
       },
@@ -52,6 +54,7 @@ if (cluster.isMaster) {
           activityController(models),
           diningController(models),
           locationController(models),
+          shopController(models),
           statusController(models)
         ],
         cors: true,
