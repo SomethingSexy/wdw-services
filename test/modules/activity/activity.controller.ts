@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import activityController from '../../../src/modules/activity/Controller';
+import Controller from '../../../src/modules/activity/activity.controller';
 
 chai.use(chaiAsPromised);
 
@@ -20,8 +20,7 @@ describe('controller', () => {
           }
         };
 
-        const Controller = activityController(mockModel);
-        const controller = new Controller();
+        const controller = new Controller(mockModel);
         const response = await controller.batchUpsertActivities(activities);
         expect(response).to.deep.equal(updatedActivity);
       });

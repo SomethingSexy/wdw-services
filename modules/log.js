@@ -34,5 +34,20 @@ const logger = winston_1.createLogger({
     level: index_1.default.log.level,
     transports: logTransports,
 });
+class NestLogger {
+    constructor(internalLogger) {
+        this.logger = internalLogger;
+    }
+    log(message) {
+        this.logger.info(message);
+    }
+    error(message, _) {
+        this.logger.error(message);
+    }
+    warn(message) {
+        this.logger.warn(message);
+    }
+}
+exports.NestLogger = NestLogger;
 exports.default = logger;
 //# sourceMappingURL=log.js.map

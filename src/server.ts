@@ -1,21 +1,13 @@
+import { NestFactory } from '@nestjs/core';
 import cluster from 'cluster';
-import Koa from 'koa';
-import bodyParser from 'koa-bodyparser';
-import compress from 'koa-compress';
 import { cpus } from 'os';
 import 'reflect-metadata';
-import { useKoaServer } from 'routing-controllers';
-import { createModels } from 'wdw-data';
-import zlib from 'zlib';
+import ApplicationModule from './app.module';
 import config from './config/index';
-import logger from './log';
-import dataInterceptor from './middleware/data';
-import loggingMiddleware from './middleware/logging';
-import activityController from './modules/activity/Controller';
-import diningController from './modules/dining/Controller';
-import locationController from './modules/location/Controller';
-import shopController from './modules/shop/Controller';
-import statusController from './modules/status/Controller';
+import HttpExceptionFilter from './filters/http-exception.filters';
+import DataInterceptor from './interceptors/data.interceptor';
+import LoggerInterceptor from './interceptors/logger.interceptor';
+import logger, { NestLogger } from './log';
 
 const numCPUs = cpus().length;
 
@@ -35,40 +27,15 @@ if (cluster.isMaster) {
     cluster.fork();
   });
 } else {
-  createModels(
-    {
-      database: 'wdw',
-      logging: false,
-      pool: {
-        max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
-      },
-      username: 'tylercvetan',
-    },
-    logger
-  )
-    .then(models => {
-      const app = new Koa();
-
-      useKoaServer(app, {
-        controllers: [
-          activityController(models),
-          diningController(models),
-          locationController(models),
-          shopController(models),
-          statusController(models)
-        ],
-        cors: true,
-        defaultErrorHandler: false,
-        interceptors: [dataInterceptor],
-        middlewares: [loggingMiddleware(config, logger)]
-      });
-
-      app.use(bodyParser());
-      app.use(compress({ flush: zlib.Z_SYNC_FLUSH }));
-
-      app.listen(config.port);
-
-      const envLabel = process.env.NODE_ENV || 'development';
-      logger.info(`Started server instance on port ${config.port} in ${envLabel} environment at ${new Date().toLocaleString()} (localtime).`); // tslint:disable-line
+  async function bootstrap() {
+    const app = await NestFactory.create(ApplicationModule, {
+      logger: new NestLogger(logger)
     });
+    app.useGlobalFilters(new HttpExceptionFilter());
+    app.useGlobalInterceptors(new LoggerInterceptor(), new DataInterceptor());
+    await app.listen(config.port);
+    const envLabel = process.env.NODE_ENV || 'development';
+    logger.info(`Started server instance on port ${config.port} in ${envLabel} environment at ${new Date().toLocaleString()} (localtime).`); // tslint:disable-line
+  }
+  bootstrap();
 }

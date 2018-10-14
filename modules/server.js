@@ -2,25 +2,24 @@
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const core_1 = require("@nestjs/core");
 const cluster_1 = __importDefault(require("cluster"));
-const koa_1 = __importDefault(require("koa"));
-const koa_bodyparser_1 = __importDefault(require("koa-bodyparser"));
-const koa_compress_1 = __importDefault(require("koa-compress"));
 const os_1 = require("os");
 require("reflect-metadata");
-const routing_controllers_1 = require("routing-controllers");
-const wdw_data_1 = require("wdw-data");
-const zlib_1 = __importDefault(require("zlib"));
+const app_module_1 = __importDefault(require("./app.module"));
 const index_1 = __importDefault(require("./config/index"));
-const log_1 = __importDefault(require("./log"));
-const data_1 = __importDefault(require("./middleware/data"));
-const logging_1 = __importDefault(require("./middleware/logging"));
-const Controller_1 = __importDefault(require("./modules/activity/Controller"));
-const Controller_2 = __importDefault(require("./modules/dining/Controller"));
-const Controller_3 = __importDefault(require("./modules/location/Controller"));
-const Controller_4 = __importDefault(require("./modules/shop/Controller"));
-const Controller_5 = __importDefault(require("./modules/status/Controller"));
+const http_exception_filters_1 = __importDefault(require("./filters/http-exception.filters"));
+const data_interceptor_1 = __importDefault(require("./interceptors/data.interceptor"));
+const logger_interceptor_1 = __importDefault(require("./interceptors/logger.interceptor"));
+const log_1 = __importStar(require("./log"));
 const numCPUs = os_1.cpus().length;
 if (cluster_1.default.isMaster) {
     log_1.default.info(`This machine has ${numCPUs} CPUs.`);
@@ -37,34 +36,16 @@ if (cluster_1.default.isMaster) {
     });
 }
 else {
-    wdw_data_1.createModels({
-        database: 'wdw',
-        logging: false,
-        pool: {
-            max: 100 // TODO: only here because we are kicking off a shit ton of async inserts
-        },
-        username: 'tylercvetan',
-    }, log_1.default)
-        .then(models => {
-        const app = new koa_1.default();
-        routing_controllers_1.useKoaServer(app, {
-            controllers: [
-                Controller_1.default(models),
-                Controller_2.default(models),
-                Controller_3.default(models),
-                Controller_4.default(models),
-                Controller_5.default(models)
-            ],
-            cors: true,
-            defaultErrorHandler: false,
-            interceptors: [data_1.default],
-            middlewares: [logging_1.default(index_1.default, log_1.default)]
+    async function bootstrap() {
+        const app = await core_1.NestFactory.create(app_module_1.default, {
+            logger: new log_1.NestLogger(log_1.default)
         });
-        app.use(koa_bodyparser_1.default());
-        app.use(koa_compress_1.default({ flush: zlib_1.default.Z_SYNC_FLUSH }));
-        app.listen(index_1.default.port);
+        app.useGlobalFilters(new http_exception_filters_1.default());
+        app.useGlobalInterceptors(new logger_interceptor_1.default(), new data_interceptor_1.default());
+        await app.listen(index_1.default.port);
         const envLabel = process.env.NODE_ENV || 'development';
         log_1.default.info(`Started server instance on port ${index_1.default.port} in ${envLabel} environment at ${new Date().toLocaleString()} (localtime).`); // tslint:disable-line
-    });
+    }
+    bootstrap();
 }
 //# sourceMappingURL=server.js.map

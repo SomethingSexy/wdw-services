@@ -1,3 +1,4 @@
+import { LoggerService } from '@nestjs/common';
 import os from 'os';
 import { createLogger, format, transports } from 'winston';
 import config from './config/index';
@@ -52,5 +53,21 @@ const logger = createLogger({
   level: config.log.level,
   transports: logTransports,
 });
+
+export class NestLogger implements LoggerService {
+  private logger;
+  constructor(internalLogger) {
+    this.logger = internalLogger;
+  }
+  public log(message: string) {
+    this.logger.info(message);
+  }
+  public error(message: string, _: string) {
+    this.logger.error(message);
+  }
+  public warn(message: string) {
+    this.logger.warn(message);
+  }
+}
 
 export default logger;

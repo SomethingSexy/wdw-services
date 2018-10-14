@@ -1,7 +1,7 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import locationController from '../../../src/modules/location/Controller';
+import Controller from '../../../src/modules/location/location.controller';
 
 chai.use(chaiAsPromised);
 
@@ -17,8 +17,7 @@ describe('controller', () => {
           }
         };
 
-        const Controller = locationController(mockModel);
-        const controller = new Controller();
+        const controller = new Controller(mockModel);
         const response = await controller.getAllLocations();
         expect(response).to.deep.equal([{ id: 'foo' }]);
       });
@@ -37,8 +36,7 @@ describe('controller', () => {
           }
         };
 
-        const Controller = locationController(mockModel);
-        const controller = new Controller();
+        const controller = new Controller(mockModel);
         const response = await controller.batchUpsertLocations(locations);
         expect(response).to.deep.equal(updatedLocation);
       });
