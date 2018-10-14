@@ -14,7 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const log_1 = __importDefault(require("../../log"));
-let LocationController = class LocationController {
+let ParkController = class ParkController {
     constructor(models) {
         this.models = models;
     }
@@ -32,10 +32,10 @@ let LocationController = class LocationController {
                 if (fetchSchedule === 'true') {
                     where.fetchSchedule = true;
                 }
-                locations = await this.models.location.list(where);
+                locations = await this.models.park.list(where);
             }
             else {
-                locations = await this.models.location.list();
+                locations = await this.models.park.list();
             }
             return locations;
         }
@@ -51,7 +51,7 @@ let LocationController = class LocationController {
      */
     async batchUpsertLocations(locations) {
         try {
-            return await this.models.location.addUpdate(locations);
+            return await this.models.park.addUpdate(locations);
         }
         catch ({ message, code }) {
             throw new common_1.InternalServerErrorException(message);
@@ -64,7 +64,7 @@ let LocationController = class LocationController {
         let found;
         try {
             log_1.default.debug(`Searching for location ${id}`);
-            found = await this.models.location.findById(id);
+            found = await this.models.park.findById(id);
         }
         catch (error) {
             throw new common_1.InternalServerErrorException(error.message);
@@ -82,7 +82,7 @@ let LocationController = class LocationController {
         let found;
         try {
             log_1.default.debug(`Searching for activities for location ${id}`);
-            found = await this.models.location.get(id, ['activities']);
+            found = await this.models.park.get(id, ['activities']);
         }
         catch ({ message, code }) {
             throw new common_1.InternalServerErrorException(message);
@@ -96,7 +96,7 @@ let LocationController = class LocationController {
     }
     async addSchedules(id, schedules) {
         try {
-            return await this.models.location.addSchedules(id, schedules);
+            return await this.models.park.addSchedules(id, schedules);
         }
         catch ({ message, code }) {
             throw new common_1.InternalServerErrorException(message);
@@ -109,7 +109,7 @@ let LocationController = class LocationController {
         let found;
         try {
             log_1.default.debug(`Searching for schedules for location ${id} on ${date}`);
-            found = await this.models.location.getLocationSchedule(id, date);
+            found = await this.models.park.getSchedule(id, date);
         }
         catch ({ message, code }) {
             throw new common_1.InternalServerErrorException(message);
@@ -122,35 +122,35 @@ let LocationController = class LocationController {
     }
 };
 __decorate([
-    common_1.Get('/locations'),
+    common_1.Get('/parks'),
     __param(0, common_1.Query('type')),
     __param(1, common_1.Query('fetchSchedule'))
-], LocationController.prototype, "getAllLocations", null);
+], ParkController.prototype, "getAllLocations", null);
 __decorate([
-    common_1.Post('/locations'),
+    common_1.Post('/parks'),
     __param(0, common_1.Body())
-], LocationController.prototype, "batchUpsertLocations", null);
+], ParkController.prototype, "batchUpsertLocations", null);
 __decorate([
-    common_1.Get('/locations/:id'),
+    common_1.Get('/parks/:id'),
     __param(0, common_1.Param('id'))
-], LocationController.prototype, "getLocation", null);
+], ParkController.prototype, "getLocation", null);
 __decorate([
-    common_1.Get('/locations/:id/activities'),
+    common_1.Get('/parks/:id/activities'),
     __param(0, common_1.Param('id'))
-], LocationController.prototype, "getLocationActivities", null);
+], ParkController.prototype, "getLocationActivities", null);
 __decorate([
-    common_1.Post('/locations/:id/schedules'),
+    common_1.Post('/parks/:id/schedules'),
     __param(0, common_1.Param('id')),
     __param(1, common_1.Body())
-], LocationController.prototype, "addSchedules", null);
+], ParkController.prototype, "addSchedules", null);
 __decorate([
-    common_1.Get('/locations/:id/schedules/:date'),
+    common_1.Get('/parks/:id/schedules/:date'),
     __param(0, common_1.Param('id')),
     __param(1, common_1.Param('date'))
-], LocationController.prototype, "getLocationSchedule", null);
-LocationController = __decorate([
+], ParkController.prototype, "getLocationSchedule", null);
+ParkController = __decorate([
     common_1.Controller(),
     __param(0, common_1.Inject('Models'))
-], LocationController);
-exports.default = LocationController;
-//# sourceMappingURL=location.controller.js.map
+], ParkController);
+exports.default = ParkController;
+//# sourceMappingURL=park.controller.js.map

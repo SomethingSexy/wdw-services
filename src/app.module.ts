@@ -3,7 +3,8 @@ import { createModels } from 'wdw-data';
 import logger from './log';
 import ActivityController from './modules/activity/activity.controller';
 import DiningController from './modules/dining/dining.controller';
-import LocationController from './modules/location/location.controller';
+import ParkController from './modules/location/park.controller';
+import ResortController from './modules/location/resort.controller';
 import ShopController from './modules/shop/shop.controller';
 import StatusController from './modules/status/status.controller';
 
@@ -11,7 +12,8 @@ import StatusController from './modules/status/status.controller';
   controllers: [
     ActivityController,
     DiningController,
-    LocationController,
+    ParkController,
+    ResortController,
     ShopController,
     StatusController
   ],

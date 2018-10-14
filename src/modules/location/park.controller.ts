@@ -12,7 +12,7 @@ import {
 import logger from '../../log';
 
 @Controller()
-class LocationController {
+class ParkController {
   constructor(
     @Inject('Models')
     private readonly models: any, // TODO need to pull interface
@@ -21,7 +21,7 @@ class LocationController {
   /**
    * Retrieves all locations
    */
-  @Get('/locations')
+  @Get('/parks')
   public async getAllLocations(
     @Query('type') type?: string,
     @Query('fetchSchedule') fetchSchedule?: string
@@ -36,9 +36,9 @@ class LocationController {
         if (fetchSchedule === 'true') {
           where.fetchSchedule = true;
         }
-        locations = await this.models.location.list(where);
+        locations = await this.models.park.list(where);
       } else {
-        locations = await this.models.location.list();
+        locations = await this.models.park.list();
       }
 
       return locations;
@@ -53,12 +53,12 @@ class LocationController {
    *
    * @param locations
    */
-  @Post('/locations')
+  @Post('/parks')
   public async batchUpsertLocations(
     @Body() locations: any[]
   ): Promise<{}> {
     try {
-      return await this.models.location.addUpdate(locations);
+      return await this.models.park.addUpdate(locations);
     } catch ({ message, code }) {
       throw new InternalServerErrorException(message);
     }
@@ -67,7 +67,7 @@ class LocationController {
   /**
    * Retrieves a single location
    */
-  @Get('/locations/:id')
+  @Get('/parks/:id')
   public async getLocation(
     @Param('id') id: string
   ): Promise<{}> {
@@ -75,22 +75,22 @@ class LocationController {
 
     try {
       logger.debug(`Searching for location ${id}`);
-      found = await this.models.location.get(id);
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+      found = await this.models.park.findById(id);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
     if (!found) {
       throw new BadRequestException(`Location ${id} does not exist.`);
     }
 
     logger.debug(`Found location ${id}, returning.`);
-    return found;
+    return found.data;
   }
 
   /**
    * Retrieves a single location's activities
    */
-  @Get('/locations/:id/activities')
+  @Get('/parks/:id/activities')
   public async getLocationActivities(
     @Param('id') id: string
   ): Promise<{}> {
@@ -98,7 +98,7 @@ class LocationController {
 
     try {
       logger.debug(`Searching for activities for location ${id}`);
-      found = await this.models.location.get(id, ['activities']);
+      found = await this.models.park.get(id, ['activities']);
     } catch ({ message, code }) {
       throw new InternalServerErrorException(message);
     }
@@ -112,13 +112,13 @@ class LocationController {
     return activities;
   }
 
-  @Post('/locations/:id/schedules')
+  @Post('/parks/:id/schedules')
   public async addSchedules(
     @Param('id') id: string,
     @Body() schedules: any[]
   ): Promise<{}> {
     try {
-      return await this.models.location.addSchedules(id, schedules);
+      return await this.models.park.addSchedules(id, schedules);
     } catch ({ message, code }) {
       throw new InternalServerErrorException(message);
     }
@@ -127,7 +127,7 @@ class LocationController {
   /**
    * Retrieves a single location's schedule by date
    */
-  @Get('/locations/:id/schedules/:date')
+  @Get('/parks/:id/schedules/:date')
   public async getLocationSchedule(
     @Param('id') id: string,
     @Param('date') date: string
@@ -136,7 +136,7 @@ class LocationController {
 
     try {
       logger.debug(`Searching for schedules for location ${id} on ${date}`);
-      found = await this.models.location.getLocationSchedule(id, date);
+      found = await this.models.park.getSchedule(id, date);
     } catch ({ message, code }) {
       throw new InternalServerErrorException(message);
     }
@@ -149,4 +149,4 @@ class LocationController {
   }
 }
 
-export default LocationController;
+export default ParkController;

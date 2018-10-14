@@ -14,7 +14,8 @@ const wdw_data_1 = require("wdw-data");
 const log_1 = __importDefault(require("./log"));
 const activity_controller_1 = __importDefault(require("./modules/activity/activity.controller"));
 const dining_controller_1 = __importDefault(require("./modules/dining/dining.controller"));
-const location_controller_1 = __importDefault(require("./modules/location/location.controller"));
+const park_controller_1 = __importDefault(require("./modules/location/park.controller"));
+const resort_controller_1 = __importDefault(require("./modules/location/resort.controller"));
 const shop_controller_1 = __importDefault(require("./modules/shop/shop.controller"));
 const status_controller_1 = __importDefault(require("./modules/status/status.controller"));
 let ApplicationModule = class ApplicationModule {
@@ -24,7 +25,8 @@ ApplicationModule = __decorate([
         controllers: [
             activity_controller_1.default,
             dining_controller_1.default,
-            location_controller_1.default,
+            park_controller_1.default,
+            resort_controller_1.default,
             shop_controller_1.default,
             status_controller_1.default
         ],
