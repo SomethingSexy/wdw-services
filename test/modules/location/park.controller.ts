@@ -1,16 +1,16 @@
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
 import 'mocha';
-import Controller from '../../../src/modules/location/location.controller';
+import Controller from '../../../src/modules/location/park.controller';
 
 chai.use(chaiAsPromised);
 
 describe('controller', () => {
-  describe('locations', () => {
+  describe('park', () => {
     describe('getAllLocations', () => {
       it('should return all locations', async () => {
         const mockModel = {
-          location: {
+          park: {
             list: () => [{
               id: 'foo'
             }]
@@ -31,8 +31,8 @@ describe('controller', () => {
         const updatedLocation = [{ ...location1, id: '1' }, { ...location2, id: '2' }];
 
         const mockModel = {
-          location: {
-            addUpdate: () => updatedLocation
+          park: {
+            bulkAddUpdate: () => updatedLocation
           }
         };
 

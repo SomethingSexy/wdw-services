@@ -10,6 +10,7 @@ import {
   Query
 } from '@nestjs/common';
 import logger from '../../log';
+import ParseBooleanPipe from '../../pipes/parse-boolean.pipe';
 
 @Controller()
 class ParkController {
@@ -23,27 +24,24 @@ class ParkController {
    */
   @Get('/parks')
   public async getAllLocations(
-    @Query('type') type?: string,
-    @Query('fetchSchedule') fetchSchedule?: string
+    @Query('fetchSchedule', new ParseBooleanPipe()) fetchSchedule?: boolean
   ): Promise<{}> {
     try {
       let locations;
-      if (type || fetchSchedule) {
+      if (fetchSchedule) {
         const where: { type?: string; fetchSchedule?: boolean; } = {};
-        if (type) {
-          where.type = type;
-        }
-        if (fetchSchedule === 'true') {
+        if (fetchSchedule) {
           where.fetchSchedule = true;
         }
+
         locations = await this.models.park.list(where);
       } else {
         locations = await this.models.park.list();
       }
 
       return locations;
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+    } catch (error) {
+      throw new InternalServerErrorException(error);
     }
   }
 
@@ -58,9 +56,9 @@ class ParkController {
     @Body() locations: any[]
   ): Promise<{}> {
     try {
-      return await this.models.park.addUpdate(locations);
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+      return await this.models.park.bulkAddUpdate(locations);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -98,9 +96,9 @@ class ParkController {
 
     try {
       logger.debug(`Searching for activities for location ${id}`);
-      found = await this.models.park.get(id, ['activities']);
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+      found = await this.models.park.findById(id, ['activities']);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
     if (!found) {
       throw new BadRequestException(`Location ${id} does not exist.`);
@@ -108,19 +106,20 @@ class ParkController {
 
     logger.debug(`Found location ${id}, returning activities.`);
 
-    const activities = found.activities;
-    return activities;
+    return found.data.activities;
   }
 
   @Post('/parks/:id/schedules')
   public async addSchedules(
     @Param('id') id: string,
-    @Body() schedules: any[]
+    @Body() schedule: {}
   ): Promise<{}> {
     try {
-      return await this.models.park.addSchedules(id, schedules);
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+      const found = await this.models.park.findById(id);
+      logger.debug(`controller ${JSON.stringify(schedule, null, 4)}`);
+      return await found.bulkAddSchedules(schedule);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -136,16 +135,18 @@ class ParkController {
 
     try {
       logger.debug(`Searching for schedules for location ${id} on ${date}`);
-      found = await this.models.park.getSchedule(id, date);
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+      found = await this.models.park.findById(id);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
     if (!found) {
       throw new BadRequestException(`Location ${id} does not exist.`);
     }
 
     logger.debug(`Found location ${id}, returning.`);
-    return found;
+
+    const schedules = await found.getSchedule(date);
+    return schedules;
   }
 }
 

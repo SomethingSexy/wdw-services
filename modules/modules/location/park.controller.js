@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const log_1 = __importDefault(require("../../log"));
+const parse_boolean_pipe_1 = __importDefault(require("../../pipes/parse-boolean.pipe"));
 let ParkController = class ParkController {
     constructor(models) {
         this.models = models;
@@ -21,15 +22,12 @@ let ParkController = class ParkController {
     /**
      * Retrieves all locations
      */
-    async getAllLocations(type, fetchSchedule) {
+    async getAllLocations(fetchSchedule) {
         try {
             let locations;
-            if (type || fetchSchedule) {
+            if (fetchSchedule) {
                 const where = {};
-                if (type) {
-                    where.type = type;
-                }
-                if (fetchSchedule === 'true') {
+                if (fetchSchedule) {
                     where.fetchSchedule = true;
                 }
                 locations = await this.models.park.list(where);
@@ -39,8 +37,8 @@ let ParkController = class ParkController {
             }
             return locations;
         }
-        catch ({ message, code }) {
-            throw new common_1.InternalServerErrorException(message);
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error);
         }
     }
     /**
@@ -51,10 +49,10 @@ let ParkController = class ParkController {
      */
     async batchUpsertLocations(locations) {
         try {
-            return await this.models.park.addUpdate(locations);
+            return await this.models.park.bulkAddUpdate(locations);
         }
-        catch ({ message, code }) {
-            throw new common_1.InternalServerErrorException(message);
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message);
         }
     }
     /**
@@ -82,24 +80,25 @@ let ParkController = class ParkController {
         let found;
         try {
             log_1.default.debug(`Searching for activities for location ${id}`);
-            found = await this.models.park.get(id, ['activities']);
+            found = await this.models.park.findById(id, ['activities']);
         }
-        catch ({ message, code }) {
-            throw new common_1.InternalServerErrorException(message);
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message);
         }
         if (!found) {
             throw new common_1.BadRequestException(`Location ${id} does not exist.`);
         }
         log_1.default.debug(`Found location ${id}, returning activities.`);
-        const activities = found.activities;
-        return activities;
+        return found.data.activities;
     }
-    async addSchedules(id, schedules) {
+    async addSchedules(id, schedule) {
         try {
-            return await this.models.park.addSchedules(id, schedules);
+            const found = await this.models.park.findById(id);
+            log_1.default.debug(`controller ${JSON.stringify(schedule, null, 4)}`);
+            return await found.bulkAddSchedules(schedule);
         }
-        catch ({ message, code }) {
-            throw new common_1.InternalServerErrorException(message);
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message);
         }
     }
     /**
@@ -109,22 +108,22 @@ let ParkController = class ParkController {
         let found;
         try {
             log_1.default.debug(`Searching for schedules for location ${id} on ${date}`);
-            found = await this.models.park.getSchedule(id, date);
+            found = await this.models.park.findById(id);
         }
-        catch ({ message, code }) {
-            throw new common_1.InternalServerErrorException(message);
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message);
         }
         if (!found) {
             throw new common_1.BadRequestException(`Location ${id} does not exist.`);
         }
         log_1.default.debug(`Found location ${id}, returning.`);
-        return found;
+        const schedules = await found.getSchedule(date);
+        return schedules;
     }
 };
 __decorate([
     common_1.Get('/parks'),
-    __param(0, common_1.Query('type')),
-    __param(1, common_1.Query('fetchSchedule'))
+    __param(0, common_1.Query('fetchSchedule', new parse_boolean_pipe_1.default()))
 ], ParkController.prototype, "getAllLocations", null);
 __decorate([
     common_1.Post('/parks'),

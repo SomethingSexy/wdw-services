@@ -10,6 +10,7 @@ import {
   Query
 } from '@nestjs/common';
 import logger from '../../log';
+import ParseBooleanPipe from '../../pipes/parse-boolean.pipe';
 
 @Controller()
 class ResortController {
@@ -23,17 +24,13 @@ class ResortController {
    */
   @Get('/resorts')
   public async getAllLocations(
-    @Query('type') type?: string,
-    @Query('fetchSchedule') fetchSchedule?: string
+    @Query('fetchSchedule', new ParseBooleanPipe()) fetchSchedule?: boolean
   ): Promise<{}> {
     try {
       let locations;
-      if (type || fetchSchedule) {
+      if (fetchSchedule) {
         const where: { type?: string; fetchSchedule?: boolean; } = {};
-        if (type) {
-          where.type = type;
-        }
-        if (fetchSchedule === 'true') {
+        if (fetchSchedule) {
           where.fetchSchedule = true;
         }
         locations = await this.models.resort.list(where);
@@ -58,7 +55,7 @@ class ResortController {
     @Body() locations: any[]
   ): Promise<{}> {
     try {
-      return await this.models.resort.addUpdate(locations);
+      return await this.models.resort.bulkAddUpdate(locations);
     } catch ({ message, code }) {
       throw new InternalServerErrorException(message);
     }
@@ -98,9 +95,9 @@ class ResortController {
 
     try {
       logger.debug(`Searching for activities for location ${id}`);
-      found = await this.models.resort.get(id, ['activities']);
-    } catch ({ message, code }) {
-      throw new InternalServerErrorException(message);
+      found = await this.models.resort.findById(id, ['activities']);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
     }
     if (!found) {
       throw new BadRequestException(`Location ${id} does not exist.`);
@@ -108,8 +105,7 @@ class ResortController {
 
     logger.debug(`Found location ${id}, returning activities.`);
 
-    const activities = found.activities;
-    return activities;
+    return found.data.activities;
   }
 }
 

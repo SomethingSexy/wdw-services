@@ -28,11 +28,15 @@ let HttpExceptionFilter = class HttpExceptionFilter {
         const response = ctx.getResponse();
         const request = ctx.getRequest();
         const status = exception.getStatus();
-        log_1.default.error(`${request.method} ${request.url} ${status} -  ${exception.message}: ${exception.stack}`);
+        log_1.default.error(
+        // tslint:disable-next-line:max-line-length
+        `${request.method} ${request.url} ${status} -  ${exception.message.error}: ${exception.message.message} ${exception.stack}`);
         response
             .status(status)
             .json({
-            errors: [buildError(exception.message, status || 500, new Date().toISOString())]
+            errors: [
+                buildError(exception.message.message.toString(), status || 500, new Date().toISOString())
+            ]
         });
     }
 };
