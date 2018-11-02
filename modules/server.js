@@ -12,6 +12,8 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const core_1 = require("@nestjs/core");
 const cluster_1 = __importDefault(require("cluster"));
+const compression_1 = __importDefault(require("compression"));
+const helmet_1 = __importDefault(require("helmet"));
 const os_1 = require("os");
 require("reflect-metadata");
 const app_module_1 = __importDefault(require("./app.module"));
@@ -40,8 +42,11 @@ else {
         const app = await core_1.NestFactory.create(app_module_1.default, {
             logger: new log_1.NestLogger(log_1.default)
         });
+        app.use(helmet_1.default());
+        app.use(compression_1.default());
         app.useGlobalFilters(new http_exception_filters_1.default());
         app.useGlobalInterceptors(new logger_interceptor_1.default(), new data_interceptor_1.default());
+        app.enableCors();
         await app.listen(index_1.default.port);
         const envLabel = process.env.NODE_ENV || 'development';
         log_1.default.info(`Started server instance on port ${index_1.default.port} in ${envLabel} environment at ${new Date().toLocaleString()} (localtime).`); // tslint:disable-line

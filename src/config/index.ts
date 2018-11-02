@@ -2,7 +2,7 @@ import joi from 'joi';
 import { IServerConfig } from '../types';
 import log from './log';
 
-const PORT = process.env.PORT || '6001';
+const PORT = process.env.PORT || '6002';
 const NAME = process.env.NAME || 'WDW Services';
 
 const commonSchema = joi.object({

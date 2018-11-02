@@ -1,5 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import cluster from 'cluster';
+import compression from 'compression';
+import helmet from 'helmet';
 import { cpus } from 'os';
 import 'reflect-metadata';
 import ApplicationModule from './app.module';
@@ -31,8 +33,13 @@ if (cluster.isMaster) {
     const app = await NestFactory.create(ApplicationModule, {
       logger: new NestLogger(logger)
     });
+
+    app.use(helmet());
+    app.use(compression());
     app.useGlobalFilters(new HttpExceptionFilter());
     app.useGlobalInterceptors(new LoggerInterceptor(), new DataInterceptor());
+    app.enableCors();
+
     await app.listen(config.port);
     const envLabel = process.env.NODE_ENV || 'development';
     logger.info(`Started server instance on port ${config.port} in ${envLabel} environment at ${new Date().toLocaleString()} (localtime).`); // tslint:disable-line

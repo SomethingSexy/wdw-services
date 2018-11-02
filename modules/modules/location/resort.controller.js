@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const log_1 = __importDefault(require("../../log"));
+const parse_boolean_pipe_1 = __importDefault(require("../../pipes/parse-boolean.pipe"));
 let ResortController = class ResortController {
     constructor(models) {
         this.models = models;
@@ -21,15 +22,12 @@ let ResortController = class ResortController {
     /**
      * Retrieves all locations
      */
-    async getAllLocations(type, fetchSchedule) {
+    async getAllLocations(fetchSchedule) {
         try {
             let locations;
-            if (type || fetchSchedule) {
+            if (fetchSchedule) {
                 const where = {};
-                if (type) {
-                    where.type = type;
-                }
-                if (fetchSchedule === 'true') {
+                if (fetchSchedule) {
                     where.fetchSchedule = true;
                 }
                 locations = await this.models.resort.list(where);
@@ -51,7 +49,7 @@ let ResortController = class ResortController {
      */
     async batchUpsertLocations(locations) {
         try {
-            return await this.models.resort.addUpdate(locations);
+            return await this.models.resort.bulkAddUpdate(locations);
         }
         catch ({ message, code }) {
             throw new common_1.InternalServerErrorException(message);
@@ -82,23 +80,21 @@ let ResortController = class ResortController {
         let found;
         try {
             log_1.default.debug(`Searching for activities for location ${id}`);
-            found = await this.models.resort.get(id, ['activities']);
+            found = await this.models.resort.findById(id, ['activities']);
         }
-        catch ({ message, code }) {
-            throw new common_1.InternalServerErrorException(message);
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message);
         }
         if (!found) {
             throw new common_1.BadRequestException(`Location ${id} does not exist.`);
         }
         log_1.default.debug(`Found location ${id}, returning activities.`);
-        const activities = found.activities;
-        return activities;
+        return found.data.activities;
     }
 };
 __decorate([
     common_1.Get('/resorts'),
-    __param(0, common_1.Query('type')),
-    __param(1, common_1.Query('fetchSchedule'))
+    __param(0, common_1.Query('fetchSchedule', new parse_boolean_pipe_1.default()))
 ], ResortController.prototype, "getAllLocations", null);
 __decorate([
     common_1.Post('/resorts'),

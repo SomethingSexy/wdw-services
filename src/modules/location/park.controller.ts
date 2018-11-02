@@ -27,17 +27,12 @@ class ParkController {
     @Query('fetchSchedule', new ParseBooleanPipe()) fetchSchedule?: boolean
   ): Promise<{}> {
     try {
-      let locations;
+      const where: { type?: string; fetchSchedule?: boolean; } = { type: 'theme-park' };
       if (fetchSchedule) {
-        const where: { type?: string; fetchSchedule?: boolean; } = {};
-        if (fetchSchedule) {
-          where.fetchSchedule = true;
-        }
-
-        locations = await this.models.park.list(where);
-      } else {
-        locations = await this.models.park.list();
+        where.fetchSchedule = true;
       }
+
+      const locations = await this.models.park.list(where);
 
       return locations;
     } catch (error) {

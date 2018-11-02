@@ -24,17 +24,11 @@ let ParkController = class ParkController {
      */
     async getAllLocations(fetchSchedule) {
         try {
-            let locations;
+            const where = { type: 'theme-park' };
             if (fetchSchedule) {
-                const where = {};
-                if (fetchSchedule) {
-                    where.fetchSchedule = true;
-                }
-                locations = await this.models.park.list(where);
+                where.fetchSchedule = true;
             }
-            else {
-                locations = await this.models.park.list();
-            }
+            const locations = await this.models.park.list(where);
             return locations;
         }
         catch (error) {

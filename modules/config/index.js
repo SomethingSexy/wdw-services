@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const joi_1 = __importDefault(require("joi"));
 const log_1 = __importDefault(require("./log"));
-const PORT = process.env.PORT || '6001';
+const PORT = process.env.PORT || '6002';
 const NAME = process.env.NAME || 'WDW Services';
 const commonSchema = joi_1.default.object({
     name: joi_1.default.string(),
