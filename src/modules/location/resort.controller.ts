@@ -27,16 +27,12 @@ class ResortController {
     @Query('fetchSchedule', new ParseBooleanPipe()) fetchSchedule?: boolean
   ): Promise<{}> {
     try {
-      let locations;
+      const where: { type?: string; fetchSchedule?: boolean; } = { };
       if (fetchSchedule) {
-        const where: { type?: string; fetchSchedule?: boolean; } = {};
-        if (fetchSchedule) {
-          where.fetchSchedule = true;
-        }
-        locations = await this.models.resort.list(where);
-      } else {
-        locations = await this.models.resort.list();
+        where.fetchSchedule = true;
       }
+
+      const locations = await this.models.resort.list(where);
 
       return locations;
     } catch ({ message, code }) {

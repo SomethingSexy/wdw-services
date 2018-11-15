@@ -24,17 +24,11 @@ let ResortController = class ResortController {
      */
     async getAllLocations(fetchSchedule) {
         try {
-            let locations;
+            const where = {};
             if (fetchSchedule) {
-                const where = {};
-                if (fetchSchedule) {
-                    where.fetchSchedule = true;
-                }
-                locations = await this.models.resort.list(where);
+                where.fetchSchedule = true;
             }
-            else {
-                locations = await this.models.resort.list();
-            }
+            const locations = await this.models.resort.list(where);
             return locations;
         }
         catch ({ message, code }) {

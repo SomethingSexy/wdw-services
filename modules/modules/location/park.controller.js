@@ -85,6 +85,24 @@ let ParkController = class ParkController {
         log_1.default.debug(`Found location ${id}, returning activities.`);
         return found.data.activities;
     }
+    /**
+     * Retrieves a single location's dining
+     */
+    async getLocationDining(id) {
+        let found;
+        try {
+            log_1.default.debug(`Searching for dining for location ${id}`);
+            found = await this.models.park.findById(id, ['dining']);
+        }
+        catch (error) {
+            throw new common_1.InternalServerErrorException(error.message);
+        }
+        if (!found) {
+            throw new common_1.BadRequestException(`Location ${id} does not exist.`);
+        }
+        log_1.default.debug(`Found location ${id}, returning dining.`);
+        return found.data.dining;
+    }
     async addSchedules(id, schedule) {
         try {
             const found = await this.models.park.findById(id);
@@ -131,6 +149,10 @@ __decorate([
     common_1.Get('/parks/:id/activities'),
     __param(0, common_1.Param('id'))
 ], ParkController.prototype, "getLocationActivities", null);
+__decorate([
+    common_1.Get('/parks/:id/dining'),
+    __param(0, common_1.Param('id'))
+], ParkController.prototype, "getLocationDining", null);
 __decorate([
     common_1.Post('/parks/:id/schedules'),
     __param(0, common_1.Param('id')),

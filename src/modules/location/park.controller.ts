@@ -104,6 +104,30 @@ class ParkController {
     return found.data.activities;
   }
 
+  /**
+   * Retrieves a single location's dining
+   */
+  @Get('/parks/:id/dining')
+  public async getLocationDining(
+    @Param('id') id: string
+  ): Promise<{}> {
+    let found;
+
+    try {
+      logger.debug(`Searching for dining for location ${id}`);
+      found = await this.models.park.findById(id, ['dining']);
+    } catch (error) {
+      throw new InternalServerErrorException(error.message);
+    }
+    if (!found) {
+      throw new BadRequestException(`Location ${id} does not exist.`);
+    }
+
+    logger.debug(`Found location ${id}, returning dining.`);
+
+    return found.data.dining;
+  }
+
   @Post('/parks/:id/schedules')
   public async addSchedules(
     @Param('id') id: string,
