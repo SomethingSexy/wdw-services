@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { createModels } from 'wdw-data';
 import logger from './log';
 import ActivityController from './modules/activity/activity.controller';
+import DateController from './modules/date/date.controller';
 import DiningController from './modules/dining/dining.controller';
 import ParkController from './modules/location/park.controller';
 import ResortController from './modules/location/resort.controller';
@@ -11,6 +12,7 @@ import StatusController from './modules/status/status.controller';
 @Module({
   controllers: [
     ActivityController,
+    DateController,
     DiningController,
     ParkController,
     ResortController,

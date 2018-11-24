@@ -13,6 +13,7 @@ const common_1 = require("@nestjs/common");
 const wdw_data_1 = require("wdw-data");
 const log_1 = __importDefault(require("./log"));
 const activity_controller_1 = __importDefault(require("./modules/activity/activity.controller"));
+const date_controller_1 = __importDefault(require("./modules/date/date.controller"));
 const dining_controller_1 = __importDefault(require("./modules/dining/dining.controller"));
 const park_controller_1 = __importDefault(require("./modules/location/park.controller"));
 const resort_controller_1 = __importDefault(require("./modules/location/resort.controller"));
@@ -24,6 +25,7 @@ ApplicationModule = __decorate([
     common_1.Module({
         controllers: [
             activity_controller_1.default,
+            date_controller_1.default,
             dining_controller_1.default,
             park_controller_1.default,
             resort_controller_1.default,
